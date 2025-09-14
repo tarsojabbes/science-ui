@@ -15,29 +15,36 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+export type ViewType = 'journals' | 'papers' | 'reviews'
+
 const data = {
   navMain: [
     {
       url: "#",
       items: [
         {
-          title: "Papers",
-          url: "#",
+          title: "Journals",
+          key: "journals" as ViewType,
         },
         {
-          title: "Journals",
-          url: "#",
+          title: "Papers",
+          key: "papers" as ViewType,
         },
         {
           title: "Reviews",
-          url: "#"
+          key: "reviews" as ViewType,
         }
       ],
     }
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  activeView: ViewType
+  onViewChange: (view: ViewType) => void
+}
+
+export function AppSidebar({ activeView, onViewChange, ...props }: AppSidebarProps) {
   const firstName = window?.localStorage.getItem('@science.username')?.split(" ")[0]
 
   return (
@@ -52,10 +59,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel>{""}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={true}>
-                      <a href={item.url}>{item.title}</a>
+                {item.items.map((menuItem) => (
+                  <SidebarMenuItem key={menuItem.title}>
+                    <SidebarMenuButton 
+                      isActive={activeView === menuItem.key}
+                      onClick={() => onViewChange(menuItem.key)}
+                    >
+                      {menuItem.title}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

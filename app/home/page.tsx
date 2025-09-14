@@ -1,13 +1,8 @@
 'use client'
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { AppSidebar, ViewType } from "@/components/app-sidebar"
+import JournalListingView from "@/components/journalListingView"
+import PapersListingView from "@/components/papersListingView"
+import ReviewsListingView from "@/components/reviewsListingView"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -17,10 +12,12 @@ import {
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function Page() {
   const isAuthenticated = useAuth()
   const router = useRouter()
+  const [activeView, setActiveView] = useState<ViewType>('journals')
 
   if (!isAuthenticated) return null
 
@@ -29,9 +26,26 @@ export default function Page() {
     router.push("/login")
   }
 
+  const handleViewChange = (view: ViewType) => {
+    setActiveView(view)
+  }
+
+  const renderActiveView = () => {
+    switch (activeView) {
+      case 'journals':
+        return <JournalListingView />
+      case 'papers':
+        return <PapersListingView />
+      case 'reviews':
+        return <ReviewsListingView />
+      default:
+        return <JournalListingView />
+    }
+  }
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar activeView={activeView} onViewChange={handleViewChange} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
@@ -41,14 +55,7 @@ export default function Page() {
           />
           <Button onClick={logOut}>Log out from Science</Button>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl">Testing div</div>
-            <div className="bg-muted/50 aspect-video rounded-xl">Testing div 2</div>
-            <div className="bg-muted/50 aspect-video rounded-xl">Testing div 3</div>
-          </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min">Testing div 3</div>
-        </div>
+        {renderActiveView()}
       </SidebarInset>
     </SidebarProvider>
   )
