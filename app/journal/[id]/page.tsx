@@ -233,8 +233,9 @@ function AddReviewer({ journalId, allUsers, reviewers, onReviewerAdded }: {
             const server = process.env.NEXT_PUBLIC_SERVER_DOMAIN
             const token = window?.localStorage.getItem("@science.token")
 
-            await axios.post(`${server}/journals/${journalId}/reviewers`, {
-                userId: selectedUser.id
+            await axios.post(`${server}/journals/reviewers`, {
+                userId: selectedUser.id,
+                journalId: journalId
             }, {
                 headers: {
                     "Authorization": "Bearer " + token,
@@ -331,7 +332,8 @@ function AddEditor({ journalId, allUsers, editors, onEditorAdded }: {
             const server = process.env.NEXT_PUBLIC_SERVER_DOMAIN
             const token = window?.localStorage.getItem("@science.token")
 
-            await axios.post(`${server}/journals/${journalId}/editors`, {
+            await axios.post(`${server}/journals/editors`, {
+                journalId: journalId,
                 userId: selectedUser.id
             }, {
                 headers: {
